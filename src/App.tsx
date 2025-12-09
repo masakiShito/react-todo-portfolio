@@ -56,7 +56,7 @@ function App() {
                     <section className="rounded-2xl border border-white/10 bg-white/5 shadow-sm backdrop-blur-sm p-6 sm:p-8">
                         <h2 className="text-lg font-medium mb-4">新規タスク</h2>
                         {/* Input */}
-                        <TodoInput onAddTask={handleAddTask} />
+                        <TodoInput onAddTask={handleAddTask} tasks={tasks} />
                     </section>
 
                     {/* Right: Task list */}

@@ -40,23 +40,42 @@ function App() {
     };
 
     return (
-        <div className="min-h-screen bg-green-50 text-green-900 transition-colors">
-            <div className="max-w-2xl mx-auto px-4 py-8">
+        <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] antialiased">
+            <div className="max-w-6xl mx-auto px-6 py-10">
+                {/* Header */}
+                <header className="mb-8">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-4xl font-semibold tracking-tight">Todo</h1>
+                        <div className="text-sm opacity-70">シンプルに、進める。</div>
+                    </div>
+                </header>
 
-                {/* ↓ 以下いつものUI */}
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-3xl font-bold">📋 TODOリスト</h1>
+                {/* Responsive 3-column grid: input narrow, list wide */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Left: Input area (span 1) */}
+                    <section className="md:col-span-1 rounded-2xl border border-white/10 bg-white/5 shadow-sm backdrop-blur-sm p-6 sm:p-8">
+                        <h2 className="text-lg font-medium mb-4">新規タスク</h2>
+                        {/* Input */}
+                        <TodoInput onAddTask={handleAddTask} tasks={tasks} />
+                    </section>
+
+                    {/* Right: Task list (span 2) */}
+                    <section className="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 shadow-sm backdrop-blur-sm p-6 sm:p-8">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-medium">タスク一覧</h2>
+                            {/* Filter Tabs */}
+                            <FilterTabs currentFilter={filter} onChange={setFilter} />
+                        </div>
+                        {/* List */}
+                        <TodoList
+                            tasks={tasks}
+                            onToggle={handleToggleTask}
+                            onDelete={handleDeleteTask}
+                            onEdit={handleEditTask}
+                            filter={filter}
+                        />
+                    </section>
                 </div>
-
-                <TodoInput onAddTask={handleAddTask} />
-                <FilterTabs currentFilter={filter} onChange={setFilter} />
-                <TodoList
-                    tasks={tasks}
-                    onToggle={handleToggleTask}
-                    onDelete={handleDeleteTask}
-                    onEdit={handleEditTask}
-                    filter={filter}
-                />
             </div>
         </div>
     );

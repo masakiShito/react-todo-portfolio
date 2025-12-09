@@ -1,0 +1,51 @@
+name: "🐛 Bug Report"
+description: "不具合やエラー報告を行うテンプレート"
+title: "[Bug]: "
+labels:
+  - bug
+projects:
+  - "masakiShito/react-todo-portfolio"
+assignees:
+  - masakiShito
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🐞 バグ報告テンプレート
+        以下の項目をできるだけ詳しく記入してください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 発生内容
+      description: どんな問題が発生したかを記載してください。
+      placeholder: 例）タスク追加ボタンを押しても反応がない。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: 発生までの手順を順番に書いてください。
+      placeholder: |
+        1. タスク入力欄に文字を入力  
+        2. Enterキー押下  
+        3. 何も起こらない
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待される結果
+      description: 本来どうなるべきだったかを記載してください。
+      placeholder: 例）新しいタスクがリストに追加される。
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 実行環境
+      description: OS / ブラウザ / バージョンなどを記載。
+      placeholder: 例）macOS 14 / Chrome 120 / Vite 5.0

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 質問・雑談はこちら
+    url: https://github.com/masakiShito/react-todo-portfolio/discussions
+    about: バグや機能以外の話題はDiscussionsでどうぞ！

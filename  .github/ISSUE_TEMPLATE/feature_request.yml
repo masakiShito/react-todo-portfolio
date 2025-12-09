@@ -1,0 +1,46 @@
+name: "✨ Feature Request"
+description: "新しい機能や改善提案を登録します"
+title: "[Feature]: "
+labels:
+  - enhancement
+projects:
+  - "masakiShito/react-todo-portfolio"
+assignees:
+  - masakiShito
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🧩 機能追加・改善提案
+        以下の項目に沿って記入してください。
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: 概要 / 目的
+      description: どんな課題を解決する機能かを簡潔に書いてください。
+      placeholder: 例）タスクの詳細ページを追加してコメント履歴を表示する。
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: 詳細仕様
+      description: 実装方針、画面構成、操作フロー、技術要件などを具体的に記入してください。
+      placeholder: 例）詳細モーダルでタイトル・説明・期限・タグを編集可能にする。
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      description: この機能の重要度を選択してください。
+      options:
+        - 🟥 High
+        - 🟧 Medium
+        - 🟩 Low
+    validations:
+      required: true

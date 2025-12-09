@@ -83,7 +83,7 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
             onChange={(e) => setPriority(e.target.value as Priority)}
             aria-invalid={!!errors.priority}
             aria-describedby={errors.priority ? 'error-priority' : undefined}
-            className={`px-3 py-2 rounded-lg bg-white/10 text-[#F8FAFC] border ${errors.priority ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
+            className={`px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.priority ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2 appearance-none`}
           >
             <option value="高">高</option>
             <option value="中">中</option>
@@ -100,7 +100,7 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
             onChange={(e) => setTag(e.target.value as Tag)}
             aria-invalid={!!errors.tag}
             aria-describedby={errors.tag ? 'error-tag' : undefined}
-            className={`px-3 py-2 rounded-lg bg-white/10 text-[#F8FAFC] border ${errors.tag ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
+            className={`px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.tag ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2 appearance-none`}
           >
             <option value="開発">開発</option>
             <option value="レビュー">レビュー</option>
@@ -119,7 +119,7 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
             onChange={(e) => setDueDate(e.target.value)}
             aria-invalid={!!errors.dueDate}
             aria-describedby={errors.dueDate ? 'error-dueDate' : undefined}
-            className={`px-3 py-2 rounded-lg bg-white/10 text-[#F8FAFC] border ${errors.dueDate ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
+            className={`px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.dueDate ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
           />
           {errors.dueDate && (
             <p id="error-dueDate" className="mt-1 text-xs text-red-300">{errors.dueDate}</p>

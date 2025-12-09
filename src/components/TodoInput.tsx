@@ -32,27 +32,27 @@ const TodoInput = ({ onAddTask }: { onAddTask: (task: Task) => void }) => {
     };
 
     return (
-        <div className="bg-white p-4 rounded shadow space-y-4">
+        <div className="space-y-4">
             <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="タスクのタイトル"
-                className="w-full p-2 border rounded"
+                className="w-full px-3.5 py-2.5 rounded-lg bg-white/10 text-[#F8FAFC] placeholder:text-[#F8FAFC]/60 border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
             />
             <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="詳細（任意）"
-                className="w-full p-2 border rounded"
+                className="w-full px-3.5 py-2.5 rounded-lg bg-white/10 text-[#F8FAFC] placeholder:text-[#F8FAFC]/60 border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
             />
             <div className="flex gap-4 flex-wrap">
                 <div>
-                    <label className="block text-sm font-semibold">優先度</label>
+                    <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">優先度</label>
                     <select
                         value={priority}
                         onChange={(e) => setPriority(e.target.value as Priority)}
-                        className="border p-2 rounded"
+                        className="px-3 py-2 rounded-lg bg-white/10 text-[#F8FAFC] border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
                     >
                         <option value="高">高</option>
                         <option value="中">中</option>
@@ -60,11 +60,11 @@ const TodoInput = ({ onAddTask }: { onAddTask: (task: Task) => void }) => {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold">タグ</label>
+                    <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">タグ</label>
                     <select
                         value={tag}
                         onChange={(e) => setTag(e.target.value as Tag)}
-                        className="border p-2 rounded"
+                        className="px-3 py-2 rounded-lg bg-white/10 text-[#F8FAFC] border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
                     >
                         <option value="開発">開発</option>
                         <option value="レビュー">レビュー</option>
@@ -73,18 +73,18 @@ const TodoInput = ({ onAddTask }: { onAddTask: (task: Task) => void }) => {
                     </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold">期限</label>
+                    <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">期限</label>
                     <input
                         type="datetime-local"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
-                        className="border p-2 rounded"
+                        className="px-3 py-2 rounded-lg bg-white/10 text-[#F8FAFC] border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
                     />
                 </div>
             </div>
             <button
                 onClick={handleSubmit}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#38BDF8] text-[#0F172A] px-4 py-2.5 font-medium shadow-sm hover:opacity-95 transition"
             >
                 タスクを追加
             </button>

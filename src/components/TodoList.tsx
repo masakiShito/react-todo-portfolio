@@ -2,17 +2,6 @@ import TodoItem from './TodoItem';
 import type { Task } from '../utils/types';
 
 /**
- * TodoList コンポーネント Props
- */
-type TodoListProps = {
-    tasks: Task[];
-    onToggle: (id: string) => void;
-    onDelete: (id: string) => void;
-    onEdit: (updatedTask: Task) => void;
-    filter: 'all' | 'completed' | 'incomplete';
-};
-
-/**
  * TodoList コンポーネント
  * タスク一覧をフィルターに応じて表示する
  *
@@ -22,7 +11,7 @@ type TodoListProps = {
  * @param {Function} onDelete - タスク削除関数
  * @param {Function} onEdit - タスク編集関数
  */
-const TodoList = ({ tasks, onToggle, onDelete, onEdit, filter }: TodoListProps) => {
+const TodoList = ({ tasks, onToggle, onDelete, onEdit, filter }: { tasks: Task[]; onToggle: (id: string) => void; onDelete: (id: string) => void; onEdit: (updatedTask: Task) => void; filter: 'all' | 'completed' | 'incomplete'; }) => {
     /**
      * フィルター条件に応じてタスクリストをフィルタリング
      */
@@ -33,9 +22,11 @@ const TodoList = ({ tasks, onToggle, onDelete, onEdit, filter }: TodoListProps) 
     });
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="space-y-3">
             {filteredTasks.length === 0 ? (
-                <p className="text-center text-green-500">タスクはありません</p>
+                <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/60 dark:bg-zinc-900/60 p-6 text-center">
+                    <p className="text-zinc-500">タスクはありません</p>
+                </div>
             ) : (
                 filteredTasks.map((task) => (
                     <TodoItem

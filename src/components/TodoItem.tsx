@@ -30,37 +30,39 @@ const TodoItem = ({
     };
 
     return (
-        <div className="bg-white shadow-md rounded p-4 mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3 flex-1">
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-5 mb-2">
+            <div className="flex items-start gap-3">
                 <input
                     type="checkbox"
                     checked={task.completed}
                     onChange={() => onToggle(task.id)}
-                    className="mt-1 accent-green-600"
+                    className="mt-1 accent-[#38BDF8]"
                 />
                 {isEditing ? (
-                    <div className="flex-1">
+                    <div className="flex-1 space-y-2">
                         <input
                             type="text"
                             value={editedTitle}
                             onChange={(e) => setEditedTitle(e.target.value)}
-                            className="w-full mb-2 px-3 py-2 border rounded"
+                            className="w-full px-3.5 py-2.5 rounded-lg bg-white/10 text-[#F8FAFC] border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
                         />
                         <textarea
                             value={editedDescription}
                             onChange={(e) => setEditedDescription(e.target.value)}
-                            className="w-full px-3 py-2 border rounded"
+                            className="w-full px-3.5 py-2.5 rounded-lg bg-white/10 text-[#F8FAFC] border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#38BDF8]"
                         />
                     </div>
                 ) : (
-                    <div>
-                        <p className={`font-semibold ${task.completed ? 'line-through text-gray-400' : ''}`}>
+                    <div className="flex-1">
+                        <p className={`font-medium text-[#F8FAFC] ${task.completed ? 'line-through text-[#F8FAFC]/60' : ''}`}>
                             {task.title}
                         </p>
-                        {task.description && <p className="text-sm text-gray-600 whitespace-pre-wrap">{task.description}</p>}
+                        {task.description && (
+                            <p className="text-sm text-[#F8FAFC]/80 whitespace-pre-wrap">{task.description}</p>
+                        )}
 
                         {/* 追加情報（締切・優先度・タグ） */}
-                        <div className="text-xs text-gray-500 mt-1 space-x-2">
+                        <div className="text-xs text-[#F8FAFC]/70 mt-1 space-x-2">
                             {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleString()}</span>}
                             {task.priority && <span>🔥 優先度: {task.priority}</span>}
                             {task.tag && <span>🏷️ {task.tag}</span>}
@@ -68,34 +70,22 @@ const TodoItem = ({
                     </div>
                 )}
             </div>
-            <div className="mt-3 sm:mt-0 sm:ml-4 flex gap-2">
+            <div className="mt-3 flex gap-2">
                 {isEditing ? (
                     <>
-                        <button
-                            onClick={handleSave}
-                            className="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600"
-                        >
+                        <button onClick={handleSave} className="px-3 py-1.5 text-sm rounded-lg bg-[#38BDF8] text-[#0F172A] hover:opacity-95">
                             保存
                         </button>
-                        <button
-                            onClick={() => setIsEditing(false)}
-                            className="px-3 py-1 text-sm bg-gray-400 text-white rounded hover:bg-gray-500"
-                        >
+                        <button onClick={() => setIsEditing(false)} className="px-3 py-1.5 text-sm rounded-lg bg-white/10 text-[#F8FAFC] hover:bg-white/15">
                             キャンセル
                         </button>
                     </>
                 ) : (
                     <>
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className="px-3 py-1 text-sm bg-yellow-400 text-white rounded hover:bg-yellow-500"
-                        >
+                        <button onClick={() => setIsEditing(true)} className="px-3 py-1.5 text-sm rounded-lg bg-white/10 text-[#F8FAFC] hover:bg-white/15">
                             編集
                         </button>
-                        <button
-                            onClick={() => onDelete(task.id)}
-                            className="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600"
-                        >
+                        <button onClick={() => onDelete(task.id)} className="px-3 py-1.5 text-sm rounded-lg bg-[#38BDF8] text-[#0F172A] hover:opacity-95">
                             削除
                         </button>
                     </>

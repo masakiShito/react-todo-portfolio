@@ -20,16 +20,16 @@ const FilterTabs = ({ currentFilter, onChange }: FilterTabsProps) => {
     ];
 
     return (
-        <div className="flex justify-center gap-4 py-3">
+        <div className="flex flex-wrap gap-2">
             {filters.map((f) => (
                 <button
                     key={f.key}
                     onClick={() => onChange(f.key)}
-                    className={`px-4 py-1 rounded-full transition-colors font-medium
-                    ${currentFilter === f.key
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-white'}
-                    hover:opacity-80`}
+                    className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition border ${
+                        currentFilter === f.key
+                            ? 'bg-[#38BDF8] text-[#0F172A] border-transparent'
+                            : 'bg-white/10 text-[#F8FAFC] border-white/10 hover:bg-white/15'
+                    }`}
                 >
                     {f.label}
                 </button>

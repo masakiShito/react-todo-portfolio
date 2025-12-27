@@ -95,6 +95,40 @@ function App() {
                     }
                 />
                 <Route
+                    path="/board"
+                    element={
+                        <HomePage
+                            tasks={tasks}
+                            filter={filter}
+                            view={view}
+                            onAddTask={handleAddTask}
+                            onToggle={handleToggleTask}
+                            onDelete={handleDeleteTask}
+                            onEditRequest={setEditingTask}
+                            updateTasks={updateTasks}
+                            setFilter={setFilter}
+                            setView={setView}
+                        />
+                    }
+                />
+                <Route
+                    path="/calendar"
+                    element={
+                        <HomePage
+                            tasks={tasks}
+                            filter={filter}
+                            view={view}
+                            onAddTask={handleAddTask}
+                            onToggle={handleToggleTask}
+                            onDelete={handleDeleteTask}
+                            onEditRequest={setEditingTask}
+                            updateTasks={updateTasks}
+                            setFilter={setFilter}
+                            setView={setView}
+                        />
+                    }
+                />
+                <Route
                     path="/tasks/:taskId"
                     element={
                         <TaskDetailPage

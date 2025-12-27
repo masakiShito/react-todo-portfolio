@@ -65,16 +65,15 @@ export function validateTask(
   }
 
   // startとendの両方が入力されている場合の整合性チェック
-  if (input.startDate && input.endDate && !errors.startDate && !errors.endDate) {
-    const start = new Date(input.startDate);
-    const end = new Date(input.endDate);
-
-    // 注: normalizeDateRangeで自動入れ替えされるため、ここでは警告のみ
-    // エラーにする場合は以下のコメントを外す
-    // if (start > end) {
-    //   errors.startDate = '開始日は終了日より前である必要があります';
-    // }
-  }
+  // 注: normalizeDateRangeで自動入れ替えされるため、ここでは検証をスキップ
+  // エラーにする場合は以下のコメントを外す
+  // if (input.startDate && input.endDate && !errors.startDate && !errors.endDate) {
+  //   const start = new Date(input.startDate);
+  //   const end = new Date(input.endDate);
+  //   if (start > end) {
+  //     errors.startDate = '開始日は終了日より前である必要があります';
+  //   }
+  // }
 
   return { valid: Object.keys(errors).length === 0, errors };
 }

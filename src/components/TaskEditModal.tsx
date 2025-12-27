@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Task, TaskStatus } from '../utils/types';
 import { validateTask, type TaskInput } from '../utils/validation';
-import { fromDateTimeLocal, toDateTimeLocal } from '../utils/dateTime';
+import { fromDateString, toDateString, normalizeDateRange } from '../utils/dateTime';
 
 const statusOptions: { value: TaskStatus; label: string }[] = [
   { value: 'todo', label: 'Todo' },
@@ -21,9 +21,11 @@ const TaskEditModal = ({ task, tasks, onSave, onClose }: TaskEditModalProps) => 
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Task['priority']>('中');
   const [tag, setTag] = useState<Task['tag']>('開発');
-  const [dueDate, setDueDate] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState<TaskStatus>('todo');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dateSwapWarning, setDateSwapWarning] = useState(false);
 
   const isOpen = Boolean(task);
 
@@ -33,9 +35,20 @@ const TaskEditModal = ({ task, tasks, onSave, onClose }: TaskEditModalProps) => 
     setDescription(task.description ?? '');
     setPriority(task.priority ?? '中');
     setTag(task.tag ?? '開発');
-    setDueDate(toDateTimeLocal(task.dueDate));
+
+    // 後方互換: dueDateがあってstartDate/endDateがない場合はdueDateを使用
+    if (task.dueDate && !task.startDate && !task.endDate) {
+      const dateStr = toDateString(task.dueDate);
+      setStartDate(dateStr);
+      setEndDate(dateStr);
+    } else {
+      setStartDate(toDateString(task.startDate));
+      setEndDate(toDateString(task.endDate));
+    }
+
     setStatus(task.status);
     setErrors({});
+    setDateSwapWarning(false);
   }, [task]);
 
   const existingTasks = useMemo(() => tasks, [tasks]);
@@ -43,12 +56,16 @@ const TaskEditModal = ({ task, tasks, onSave, onClose }: TaskEditModalProps) => 
   if (!isOpen || !task) return null;
 
   const handleSave = () => {
+    // 日付範囲を正規化
+    const { start, end, swapped } = normalizeDateRange(startDate, endDate);
+
     const input: TaskInput = {
       title: title.trim(),
       description: description.trim(),
       priority,
       tag,
-      dueDate,
+      startDate: start,
+      endDate: end,
     };
 
     const { valid, errors: vErrors } = validateTask(input, existingTasks, {
@@ -57,13 +74,20 @@ const TaskEditModal = ({ task, tasks, onSave, onClose }: TaskEditModalProps) => 
     setErrors(vErrors);
     if (!valid) return;
 
+    // 日付が入れ替わった場合は警告を表示
+    if (swapped) {
+      setDateSwapWarning(true);
+      setTimeout(() => setDateSwapWarning(false), 3000);
+    }
+
     const updatedTask: Task = {
       ...task,
       title: input.title,
       description: input.description || '',
       priority: input.priority,
       tag: input.tag,
-      dueDate: input.dueDate ? fromDateTimeLocal(input.dueDate) : undefined,
+      startDate: input.startDate ? fromDateString(input.startDate) : undefined,
+      endDate: input.endDate ? fromDateString(input.endDate) : undefined,
       status,
       completed: status === 'done',
     };
@@ -152,21 +176,6 @@ const TaskEditModal = ({ task, tasks, onSave, onClose }: TaskEditModalProps) => 
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">期限</label>
-              <input
-                type="datetime-local"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                aria-invalid={!!errors.dueDate}
-                aria-describedby={errors.dueDate ? 'edit-error-dueDate' : undefined}
-                className={`px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.dueDate ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
-              />
-              {errors.dueDate && (
-                <p id="edit-error-dueDate" className="mt-1 text-xs text-red-300">{errors.dueDate}</p>
-              )}
-            </div>
-
-            <div>
               <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">状態</label>
               <select
                 value={status}
@@ -181,6 +190,43 @@ const TaskEditModal = ({ task, tasks, onSave, onClose }: TaskEditModalProps) => 
               </select>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">開始日（任意）</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                aria-invalid={!!errors.startDate}
+                aria-describedby={errors.startDate ? 'edit-error-startDate' : undefined}
+                className={`w-full px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.startDate ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
+              />
+              {errors.startDate && (
+                <p id="edit-error-startDate" className="mt-1 text-xs text-red-300">{errors.startDate}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">終了日（任意）</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                aria-invalid={!!errors.endDate}
+                aria-describedby={errors.endDate ? 'edit-error-endDate' : undefined}
+                className={`w-full px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.endDate ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
+              />
+              {errors.endDate && (
+                <p id="edit-error-endDate" className="mt-1 text-xs text-red-300">{errors.endDate}</p>
+              )}
+            </div>
+          </div>
+
+          {dateSwapWarning && (
+            <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-xs text-yellow-200">
+              開始日と終了日が入れ替わっていたため、自動で修正しました。
+            </div>
+          )}
         </div>
 
         <div className="mt-6 flex justify-end gap-2">

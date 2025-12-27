@@ -67,3 +67,8 @@ export default tseslint.config([
   },
 ])
 ```
+
+## Features
+- Task list with filtering, editing, and localStorage persistence.
+- Kanban board (Todo / In Progress / Done) with drag & drop.
+- Calendar view for tasks with due dates.

@@ -13,7 +13,11 @@ export type ValidationResult = {
   errors: Record<string, string>;
 };
 
-export function validateTask(input: TaskInput, existing: Task[]): ValidationResult {
+export function validateTask(
+  input: TaskInput,
+  existing: Task[],
+  options?: { excludeId?: string }
+): ValidationResult {
   const errors: Record<string, string> = {};
 
   const title = (input.title ?? '').trim();
@@ -23,7 +27,10 @@ export function validateTask(input: TaskInput, existing: Task[]): ValidationResu
   if (title && title.length > 100) errors.title = '100文字以内で入力してください';
 
   const normalizedTitle = title.toLowerCase();
-  const isDup = existing.some((t) => t.title.trim().toLowerCase() === normalizedTitle);
+  const isDup = existing.some((t) => {
+    if (options?.excludeId && t.id === options.excludeId) return false;
+    return t.title.trim().toLowerCase() === normalizedTitle;
+  });
   if (!errors.title && isDup) errors.title = '同じタイトルが既に存在します';
 
   if (desc.length > 1000) errors.description = '1000文字以内で入力してください';

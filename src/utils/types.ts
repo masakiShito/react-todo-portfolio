@@ -16,7 +16,9 @@ export type Task = {
     description?: string;
     completed: boolean;
     status: TaskStatus;
-    dueDate?: string;       // ISO文字列（例: '2025-08-01T17:00'）
+    dueDate?: string;       // ISO文字列（例: '2025-08-01T17:00'）※後方互換のため残す
+    startDate?: string;     // 開始日（ISO文字列またはyyyy-mm-dd）
+    endDate?: string;       // 終了日（ISO文字列またはyyyy-mm-dd）
     priority?: Priority;    // 優先度（オプション）
     tag?: Tag;              // タグ（オプション）
 };

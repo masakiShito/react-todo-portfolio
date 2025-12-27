@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Task, Priority, Tag } from '../utils/types';
 import { validateTask, type TaskInput } from '../utils/validation';
+import { fromDateTimeLocal, normalizeDateRange } from '../utils/dateTime';
 
 const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; tasks: Task[] }) => {
   const [title, setTitle] = useState('');
@@ -8,6 +9,8 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
   const [priority, setPriority] = useState<Priority>('中');
   const [tag, setTag] = useState<Tag>('開発');
   const [dueDate, setDueDate] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = () => {
@@ -17,11 +20,15 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
       priority,
       tag,
       dueDate,
+      startDate,
+      endDate,
     };
 
     const { valid, errors: vErrors } = validateTask(input, tasks);
     setErrors(vErrors);
     if (!valid) return;
+
+    const normalizedRange = normalizeDateRange(startDate, endDate);
 
     const newTask: Task = {
       id: crypto.randomUUID(),
@@ -30,7 +37,10 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
       completed: false,
       priority: input.priority,
       tag: input.tag,
-      dueDate: input.dueDate ? new Date(input.dueDate).toISOString() : undefined,
+      status: 'todo',
+      dueDate: input.dueDate ? fromDateTimeLocal(input.dueDate) : undefined,
+      startDate: normalizedRange.startDate,
+      endDate: normalizedRange.endDate,
     };
 
     onAddTask(newTask);
@@ -41,6 +51,8 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
     setPriority('中');
     setTag('開発');
     setDueDate('');
+    setStartDate('');
+    setEndDate('');
     setErrors({});
   };
 
@@ -123,6 +135,36 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
           />
           {errors.dueDate && (
             <p id="error-dueDate" className="mt-1 text-xs text-red-300">{errors.dueDate}</p>
+          )}
+        </div>
+      </div>
+      <div className="flex gap-4 flex-wrap">
+        <div>
+          <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">開始日</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            aria-invalid={!!errors.startDate}
+            aria-describedby={errors.startDate ? 'error-startDate' : undefined}
+            className={`px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.startDate ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
+          />
+          {errors.startDate && (
+            <p id="error-startDate" className="mt-1 text-xs text-red-300">{errors.startDate}</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-[#F8FAFC]/80 mb-1">終了日</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            aria-invalid={!!errors.endDate}
+            aria-describedby={errors.endDate ? 'error-endDate' : undefined}
+            className={`px-3 py-2 rounded-lg bg-white text-[#0F172A] border ${errors.endDate ? 'border-red-400 focus:ring-red-400' : 'border-white/10 focus:ring-[#38BDF8]'} focus:outline-none focus:ring-2`}
+          />
+          {errors.endDate && (
+            <p id="error-endDate" className="mt-1 text-xs text-red-300">{errors.endDate}</p>
           )}
         </div>
       </div>

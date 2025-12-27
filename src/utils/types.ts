@@ -7,12 +7,18 @@ export type Priority = '低' | '中' | '高';
 export type Tag = '開発' | 'レビュー' | 'MTG' | 'その他';
 
 /** タスク構造 */
+export type TaskStatus = 'todo' | 'in_progress' | 'done';
+
+/** タスク構造 */
 export type Task = {
     id: string;
     title: string;
     description?: string;
     completed: boolean;
+    status: TaskStatus;
     dueDate?: string;       // ISO文字列（例: '2025-08-01T17:00'）
+    startDate?: string;     // yyyy-mm-dd または ISO
+    endDate?: string;       // yyyy-mm-dd または ISO
     priority?: Priority;    // 優先度（オプション）
     tag?: Tag;              // タグ（オプション）
 };

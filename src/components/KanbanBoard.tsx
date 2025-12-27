@@ -1,21 +1,4 @@
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCorners,
-  useSensor,
-  useSensors,
-  useDroppable,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  arrayMove,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import type { Task, TaskStatus } from '../utils/types';
 
 type KanbanBoardProps = {
@@ -30,13 +13,8 @@ const columns: { id: TaskStatus; title: string; description: string }[] = [
   { id: 'done', title: 'Done', description: '完了' },
 ];
 
-const columnId = (status: TaskStatus) => `column-${status}`;
-
 const KanbanBoard = ({ tasks, onTasksChange, onEditRequest }: KanbanBoardProps) => {
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
+  const [draggingId, setDraggingId] = useState<string | null>(null);
 
   const tasksByStatus = useMemo(() => {
     const grouped: Record<TaskStatus, Task[]> = {
@@ -51,83 +29,50 @@ const KanbanBoard = ({ tasks, onTasksChange, onEditRequest }: KanbanBoardProps) 
     return grouped;
   }, [tasks]);
 
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!over) return;
-
-    const activeId = String(active.id);
-    const overId = String(over.id);
+  const handleMove = (activeId: string, status: TaskStatus, beforeId?: string) => {
     const activeTask = tasks.find((task) => task.id === activeId);
     if (!activeTask) return;
 
-    const overStatus = columns.find((column) => columnId(column.id) === overId)?.id
-      ?? tasks.find((task) => task.id === overId)?.status;
-    if (!overStatus) return;
-
-    if (activeTask.status === overStatus) {
-      if (activeId === overId) return;
-      const columnTasks = tasksByStatus[overStatus];
-      const oldIndex = columnTasks.findIndex((task) => task.id === activeId);
-      const newIndex = columnTasks.findIndex((task) => task.id === overId);
-      if (oldIndex === -1 || newIndex === -1) return;
-
-      const reordered = arrayMove(columnTasks, oldIndex, newIndex);
-      const nextTasks: Task[] = [];
-      let reorderIndex = 0;
-      tasks.forEach((task) => {
-        if (task.status === overStatus) {
-          nextTasks.push(reordered[reorderIndex]);
-          reorderIndex += 1;
-        } else {
-          nextTasks.push(task);
-        }
-      });
-      onTasksChange(nextTasks);
-      return;
-    }
-
     const updatedTask: Task = {
       ...activeTask,
-      status: overStatus,
-      completed: overStatus === 'done',
+      status,
+      completed: status === 'done',
     };
 
     const remaining = tasks.filter((task) => task.id !== activeId);
-    const overIndex = remaining.findIndex((task) => task.id === overId);
+    const nextTasks = [...remaining];
 
-    if (overId.startsWith('column-') || overIndex === -1) {
-      const lastIndex = remaining.reduce((acc, task, index) => {
-        if (task.status === overStatus) return index;
-        return acc;
-      }, -1);
-      const insertIndex = lastIndex + 1;
-      const nextTasks = [...remaining];
+    if (beforeId) {
+      const beforeIndex = nextTasks.findIndex((task) => task.id === beforeId);
+      const insertIndex = beforeIndex === -1 ? nextTasks.length : beforeIndex;
       nextTasks.splice(insertIndex, 0, updatedTask);
       onTasksChange(nextTasks);
       return;
     }
 
-    const nextTasks = [...remaining];
-    nextTasks.splice(overIndex, 0, updatedTask);
+    const lastIndex = nextTasks.reduce((acc, task, index) => {
+      if (task.status === status) return index;
+      return acc;
+    }, -1);
+    nextTasks.splice(lastIndex + 1, 0, updatedTask);
     onTasksChange(nextTasks);
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex gap-4 overflow-x-auto pb-2">
-        {columns.map((column) => (
-          <KanbanColumn
-            key={column.id}
-            column={column}
-            tasks={tasksByStatus[column.id]}
-            onEditRequest={onEditRequest}
-          />
-        ))}
-      </div>
-    </DndContext>
+    <div className="flex gap-4 overflow-x-auto pb-2">
+      {columns.map((column) => (
+        <KanbanColumn
+          key={column.id}
+          column={column}
+          tasks={tasksByStatus[column.id]}
+          onEditRequest={onEditRequest}
+          onDropTask={(taskId, beforeId) => handleMove(taskId, column.id, beforeId)}
+          draggingId={draggingId}
+          onDragStart={setDraggingId}
+          onDragEnd={() => setDraggingId(null)}
+        />
+      ))}
+    </div>
   );
 };
 
@@ -135,62 +80,85 @@ const KanbanColumn = ({
   column,
   tasks,
   onEditRequest,
+  onDropTask,
+  draggingId,
+  onDragStart,
+  onDragEnd,
 }: {
   column: { id: TaskStatus; title: string; description: string };
   tasks: Task[];
   onEditRequest: (task: Task) => void;
+  onDropTask: (taskId: string, beforeId?: string) => void;
+  draggingId: string | null;
+  onDragStart: (taskId: string) => void;
+  onDragEnd: () => void;
 }) => {
-  const { setNodeRef } = useDroppable({ id: columnId(column.id) });
-
   return (
     <div
-      ref={setNodeRef}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={() => {
+        if (draggingId) onDropTask(draggingId);
+      }}
       className="flex-1 min-w-[260px] rounded-2xl border border-white/10 bg-white/5 p-4"
     >
       <div className="mb-4">
         <h3 className="text-base font-semibold">{column.title}</h3>
         <p className="text-xs text-[#F8FAFC]/70">{column.description}</p>
       </div>
-      <SortableContext items={tasks.map((task) => task.id)}>
-        <div className="space-y-3">
-          {tasks.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-white/10 p-4 text-sm text-[#F8FAFC]/60">
-              タスクがありません
-            </div>
-          ) : (
-            tasks.map((task) => (
-              <KanbanCard
-                key={task.id}
-                task={task}
-                onEditRequest={onEditRequest}
-              />
-            ))
-          )}
-        </div>
-      </SortableContext>
+      <div className="space-y-3">
+        {tasks.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-white/10 p-4 text-sm text-[#F8FAFC]/60">
+            タスクがありません
+          </div>
+        ) : (
+          tasks.map((task) => (
+            <KanbanCard
+              key={task.id}
+              task={task}
+              onEditRequest={onEditRequest}
+              onDropTask={onDropTask}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              draggingId={draggingId}
+            />
+          ))
+        )}
+      </div>
     </div>
   );
 };
 
-const KanbanCard = ({ task, onEditRequest }: { task: Task; onEditRequest: (task: Task) => void }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: task.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
+const KanbanCard = ({
+  task,
+  onEditRequest,
+  onDropTask,
+  onDragStart,
+  onDragEnd,
+  draggingId,
+}: {
+  task: Task;
+  onEditRequest: (task: Task) => void;
+  onDropTask: (taskId: string, beforeId?: string) => void;
+  onDragStart: (taskId: string) => void;
+  onDragEnd: () => void;
+  draggingId: string | null;
+}) => {
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className={`rounded-xl border border-white/10 bg-[#0F172A]/80 p-3 text-sm shadow-sm ${
-        isDragging ? 'opacity-70' : ''
-      }`}
+      draggable
+      onDragStart={(event) => {
+        event.dataTransfer.effectAllowed = 'move';
+        onDragStart(task.id);
+      }}
+      onDragEnd={onDragEnd}
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={(event) => {
+        event.preventDefault();
+        if (draggingId) {
+          onDropTask(draggingId, task.id);
+        }
+      }}
+      className="rounded-xl border border-white/10 bg-[#0F172A]/80 p-3 text-sm shadow-sm"
     >
       <div className="flex items-start justify-between gap-2">
         <div>

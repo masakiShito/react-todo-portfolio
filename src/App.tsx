@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { NavLink, Route, Routes, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import TodoInput from './components/TodoInput';
 import TodoList from './components/TodoList';
 import FilterTabs from './components/FilterTabs';
@@ -22,6 +21,7 @@ function App() {
     );
     const [filter, setFilter] = useState<'all' | 'completed' | 'incomplete'>('all');
     const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [view, setView] = useState<'list' | 'board' | 'calendar'>('list');
 
     const tasks = taskStore.tasks;
 
@@ -66,6 +66,23 @@ function App() {
         updateTasks(tasks.map((task) => (task.id === updatedTask.id ? normalizedTask : task)));
     };
 
+    useEffect(() => {
+        const getViewFromHash = (hash: string) => {
+            if (hash.includes('/board')) return 'board';
+            if (hash.includes('/calendar')) return 'calendar';
+            return 'list';
+        };
+
+        const handleHashChange = () => {
+            const nextView = getViewFromHash(window.location.hash);
+            setView(nextView);
+        };
+
+        handleHashChange();
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#0F172A] text-[#F8FAFC] antialiased">
             <div className="max-w-6xl mx-auto px-6 py-10">
@@ -91,80 +108,63 @@ function App() {
                         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                             <h2 className="text-lg font-medium">タスクビュー</h2>
                             <nav className="flex flex-wrap gap-2 text-sm">
-                                <NavLink
-                                    to="/"
-                                    end
-                                    className={({ isActive }) =>
-                                        `px-3.5 py-1.5 rounded-lg border transition ${
-                                            isActive
-                                                ? 'bg-[#38BDF8] text-[#0F172A] border-transparent'
-                                                : 'bg-white/10 text-[#F8FAFC] border-white/10 hover:bg-white/15'
-                                        }`
-                                    }
+                                <a
+                                    href="#/"
+                                    className={`px-3.5 py-1.5 rounded-lg border transition ${
+                                        view === 'list'
+                                            ? 'bg-[#38BDF8] text-[#0F172A] border-transparent'
+                                            : 'bg-white/10 text-[#F8FAFC] border-white/10 hover:bg-white/15'
+                                    }`}
                                 >
                                     List
-                                </NavLink>
-                                <NavLink
-                                    to="/board"
-                                    className={({ isActive }) =>
-                                        `px-3.5 py-1.5 rounded-lg border transition ${
-                                            isActive
-                                                ? 'bg-[#38BDF8] text-[#0F172A] border-transparent'
-                                                : 'bg-white/10 text-[#F8FAFC] border-white/10 hover:bg-white/15'
-                                        }`
-                                    }
+                                </a>
+                                <a
+                                    href="#/board"
+                                    className={`px-3.5 py-1.5 rounded-lg border transition ${
+                                        view === 'board'
+                                            ? 'bg-[#38BDF8] text-[#0F172A] border-transparent'
+                                            : 'bg-white/10 text-[#F8FAFC] border-white/10 hover:bg-white/15'
+                                    }`}
                                 >
                                     Board
-                                </NavLink>
-                                <NavLink
-                                    to="/calendar"
-                                    className={({ isActive }) =>
-                                        `px-3.5 py-1.5 rounded-lg border transition ${
-                                            isActive
-                                                ? 'bg-[#38BDF8] text-[#0F172A] border-transparent'
-                                                : 'bg-white/10 text-[#F8FAFC] border-white/10 hover:bg-white/15'
-                                        }`
-                                    }
+                                </a>
+                                <a
+                                    href="#/calendar"
+                                    className={`px-3.5 py-1.5 rounded-lg border transition ${
+                                        view === 'calendar'
+                                            ? 'bg-[#38BDF8] text-[#0F172A] border-transparent'
+                                            : 'bg-white/10 text-[#F8FAFC] border-white/10 hover:bg-white/15'
+                                    }`}
                                 >
                                     Calendar
-                                </NavLink>
+                                </a>
                             </nav>
                         </div>
-                        <Routes>
-                            <Route
-                                path="/"
-                                element={
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <h3 className="text-base font-medium">タスク一覧</h3>
-                                            <FilterTabs currentFilter={filter} onChange={setFilter} />
-                                        </div>
-                                        <TodoList
-                                            tasks={tasks}
-                                            onToggle={handleToggleTask}
-                                            onDelete={handleDeleteTask}
-                                            onEditRequest={setEditingTask}
-                                            filter={filter}
-                                        />
-                                    </div>
-                                }
+                        {view === 'list' && (
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-base font-medium">タスク一覧</h3>
+                                    <FilterTabs currentFilter={filter} onChange={setFilter} />
+                                </div>
+                                <TodoList
+                                    tasks={tasks}
+                                    onToggle={handleToggleTask}
+                                    onDelete={handleDeleteTask}
+                                    onEditRequest={setEditingTask}
+                                    filter={filter}
+                                />
+                            </div>
+                        )}
+                        {view === 'board' && (
+                            <KanbanBoard
+                                tasks={tasks}
+                                onTasksChange={updateTasks}
+                                onEditRequest={setEditingTask}
                             />
-                            <Route
-                                path="/board"
-                                element={
-                                    <KanbanBoard
-                                        tasks={tasks}
-                                        onTasksChange={updateTasks}
-                                        onEditRequest={setEditingTask}
-                                    />
-                                }
-                            />
-                            <Route
-                                path="/calendar"
-                                element={<CalendarView tasks={tasks} onEditRequest={setEditingTask} />}
-                            />
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
+                        )}
+                        {view === 'calendar' && (
+                            <CalendarView tasks={tasks} onEditRequest={setEditingTask} />
+                        )}
                     </section>
                 </div>
             </div>

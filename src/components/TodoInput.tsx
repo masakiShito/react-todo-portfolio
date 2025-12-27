@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Task, Priority, Tag } from '../utils/types';
 import { validateTask, type TaskInput } from '../utils/validation';
+import { fromDateTimeLocal } from '../utils/dateTime';
 
 const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; tasks: Task[] }) => {
   const [title, setTitle] = useState('');
@@ -30,7 +31,8 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
       completed: false,
       priority: input.priority,
       tag: input.tag,
-      dueDate: input.dueDate ? new Date(input.dueDate).toISOString() : undefined,
+      status: 'todo',
+      dueDate: input.dueDate ? fromDateTimeLocal(input.dueDate) : undefined,
     };
 
     onAddTask(newTask);

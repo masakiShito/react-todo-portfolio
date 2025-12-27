@@ -4,3 +4,45 @@
 body {
     @apply bg-amber-50 text-gray-900;
 }
+
+.rbc-calendar {
+    color: #f8fafc;
+}
+
+.rbc-toolbar button {
+    color: #f8fafc;
+    border: 1px solid rgba(248, 250, 252, 0.2);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.rbc-toolbar button.rbc-active,
+.rbc-toolbar button:active,
+.rbc-toolbar button:hover {
+    background-color: rgba(56, 189, 248, 0.9);
+    color: #0f172a;
+}
+
+.rbc-month-view,
+.rbc-time-view,
+.rbc-time-content,
+.rbc-timeslot-group,
+.rbc-header,
+.rbc-day-bg,
+.rbc-time-header,
+.rbc-time-header-content {
+    border-color: rgba(248, 250, 252, 0.12);
+}
+
+.rbc-today {
+    background-color: rgba(56, 189, 248, 0.12);
+}
+
+.rbc-off-range-bg {
+    background-color: rgba(15, 23, 42, 0.6);
+}
+
+.rbc-event {
+    background-color: rgba(56, 189, 248, 0.9);
+    border-color: rgba(56, 189, 248, 0.9);
+    color: #0f172a;
+}

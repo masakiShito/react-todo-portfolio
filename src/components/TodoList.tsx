@@ -9,9 +9,9 @@ import type { Task } from '../utils/types';
  * @param {'all' | 'completed' | 'incomplete'} filter - 表示条件
  * @param {Function} onToggle - 完了状態の切り替え関数
  * @param {Function} onDelete - タスク削除関数
- * @param {Function} onEdit - タスク編集関数
+ * @param {Function} onEditRequest - タスク編集リクエスト関数
  */
-const TodoList = ({ tasks, onToggle, onDelete, onEdit, filter }: { tasks: Task[]; onToggle: (id: string) => void; onDelete: (id: string) => void; onEdit: (updatedTask: Task) => void; filter: 'all' | 'completed' | 'incomplete'; }) => {
+const TodoList = ({ tasks, onToggle, onDelete, onEditRequest, filter }: { tasks: Task[]; onToggle: (id: string) => void; onDelete: (id: string) => void; onEditRequest: (task: Task) => void; filter: 'all' | 'completed' | 'incomplete'; }) => {
     /**
      * フィルター条件に応じてタスクリストをフィルタリング
      */
@@ -34,7 +34,7 @@ const TodoList = ({ tasks, onToggle, onDelete, onEdit, filter }: { tasks: Task[]
                         task={task}
                         onToggle={onToggle}
                         onDelete={onDelete}
-                        onEdit={onEdit}
+                        onEditRequest={onEditRequest}
                     />
                 ))
             )}

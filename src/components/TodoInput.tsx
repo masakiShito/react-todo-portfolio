@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Task, Priority, Tag } from '../utils/types';
 import { validateTask, type TaskInput } from '../utils/validation';
 import { fromDateString, normalizeDateRange } from '../utils/dateTime';
+import { createTaskWithHistory } from '../utils/taskHelpers';
 
 const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; tasks: Task[] }) => {
   const [title, setTitle] = useState('');
@@ -36,8 +37,7 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
       setTimeout(() => setDateSwapWarning(false), 3000);
     }
 
-    const newTask: Task = {
-      id: crypto.randomUUID(),
+    const newTask = createTaskWithHistory({
       title: input.title,
       description: input.description || '',
       completed: false,
@@ -46,7 +46,7 @@ const TodoInput = ({ onAddTask, tasks }: { onAddTask: (task: Task) => void; task
       status: 'todo',
       startDate: input.startDate ? fromDateString(input.startDate) : undefined,
       endDate: input.endDate ? fromDateString(input.endDate) : undefined,
-    };
+    });
 
     onAddTask(newTask);
 

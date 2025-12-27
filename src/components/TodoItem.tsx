@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { Task } from '../utils/types';
 import { getStatusLabel } from '../utils/status';
 
@@ -19,6 +20,7 @@ const TodoItem = ({
     onDelete: (id: string) => void;
     onEditRequest: (task: Task) => void;
 }) => {
+    const navigate = useNavigate();
     return (
         <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-5 mb-2">
             <div className="flex items-start gap-3">
@@ -48,10 +50,22 @@ const TodoItem = ({
                 </div>
             </div>
             <div className="mt-3 flex gap-2">
-                <button onClick={() => onEditRequest(task)} className="px-3 py-1.5 text-sm rounded-lg bg-white/10 text-[#F8FAFC] hover:bg-white/15">
+                <button
+                    onClick={() => navigate(`/tasks/${task.id}`)}
+                    className="px-3 py-1.5 text-sm rounded-lg bg-[#38BDF8] text-[#0F172A] hover:opacity-95"
+                >
+                    詳細
+                </button>
+                <button
+                    onClick={() => onEditRequest(task)}
+                    className="px-3 py-1.5 text-sm rounded-lg bg-white/10 text-[#F8FAFC] hover:bg-white/15"
+                >
                     編集
                 </button>
-                <button onClick={() => onDelete(task.id)} className="px-3 py-1.5 text-sm rounded-lg bg-[#38BDF8] text-[#0F172A] hover:opacity-95">
+                <button
+                    onClick={() => onDelete(task.id)}
+                    className="px-3 py-1.5 text-sm rounded-lg bg-red-500/80 text-white hover:bg-red-500"
+                >
                     削除
                 </button>
             </div>

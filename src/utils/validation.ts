@@ -37,8 +37,8 @@ export function validateTask(
 
   if (desc.length > 1000) errors.description = '1000文字以内で入力してください';
 
-  const priority = input.priority ?? '' as string;
-  const tag = input.tag ?? '' as string;
+  const priority = (input.priority ?? '') as string;
+  const tag = (input.tag ?? '') as string;
   if (!['高', '中', '低'].includes(priority)) errors.priority = '優先度が不正です';
   if (!['開発', 'レビュー', 'MTG', 'その他'].includes(tag)) errors.tag = 'タグが不正です';
 
@@ -64,16 +64,14 @@ export function validateTask(
     }
   }
 
-  // startとendの両方が入力されている場合の整合性チェック
-  // 注: normalizeDateRangeで自動入れ替えされるため、ここでは検証をスキップ
-  // エラーにする場合は以下のコメントを外す
-  // if (input.startDate && input.endDate && !errors.startDate && !errors.endDate) {
-  //   const start = new Date(input.startDate);
-  //   const end = new Date(input.endDate);
-  //   if (start > end) {
-  //     errors.startDate = '開始日は終了日より前である必要があります';
-  //   }
-  // }
+  // startとendの整合性チェック（両方有効な場合のみ検証）
+  if (input.startDate && input.endDate && !errors.startDate && !errors.endDate) {
+    const start = new Date(input.startDate);
+    const end = new Date(input.endDate);
+    if (start.getTime() > end.getTime()) {
+      errors.startDate = '開始日は終了日より前である必要があります';
+    }
+  }
 
   return { valid: Object.keys(errors).length === 0, errors };
 }

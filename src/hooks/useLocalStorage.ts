@@ -11,12 +11,22 @@ import { useState, useEffect } from 'react';
  * @example
  * const [tasks, setTasks] = useLocalStorage<Task[]>('todo-tasks', []);
  */
-export function useLocalStorage<T>(key: string, initialValue: T) {
+export function useLocalStorage<T>(
+    key: string,
+    initialValue: T,
+    options?: {
+        deserialize?: (value: unknown) => T;
+        serialize?: (value: T) => unknown;
+    }
+) {
+    const deserialize = options?.deserialize;
+    const serialize = options?.serialize;
     // 状態の初期化：localStorageから読み込む（存在しなければ初期値を使用）
     const [storedValue, setStoredValue] = useState<T>(() => {
         try {
             const item = window.localStorage.getItem(key);
-            return item ? (JSON.parse(item) as T) : initialValue;
+            const parsed = item ? JSON.parse(item) : initialValue;
+            return deserialize ? deserialize(parsed) : (parsed as T);
         } catch (error) {
             console.error(`useLocalStorage: 読み込みエラー (${key})`, error);
             return initialValue;
@@ -26,11 +36,12 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     // 状態が変わるたびにlocalStorageへ書き込み
     useEffect(() => {
         try {
-            window.localStorage.setItem(key, JSON.stringify(storedValue));
+            const serialized = serialize ? serialize(storedValue) : storedValue;
+            window.localStorage.setItem(key, JSON.stringify(serialized));
         } catch (error) {
             console.error(`useLocalStorage: 保存エラー (${key})`, error);
         }
-    }, [key, storedValue]);
+    }, [key, storedValue, serialize]);
 
     // 状態とその更新関数を返す
     return [storedValue, setStoredValue] as const;

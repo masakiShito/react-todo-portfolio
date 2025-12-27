@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Task, TaskStatus } from '../utils/types';
 
 type KanbanBoardProps = {
@@ -143,6 +144,8 @@ const KanbanCard = ({
   onDragEnd: () => void;
   draggingId: string | null;
 }) => {
+  const navigate = useNavigate();
+
   return (
     <div
       draggable
@@ -167,16 +170,29 @@ const KanbanCard = ({
             <p className="text-xs text-[#F8FAFC]/70 whitespace-pre-wrap">{task.description}</p>
           )}
         </div>
-        <button
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onEditRequest(task);
-          }}
-          className="text-xs text-[#38BDF8] hover:underline"
-        >
-          編集
-        </button>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              navigate(`/tasks/${task.id}`);
+            }}
+            className="text-xs text-[#38BDF8] hover:underline"
+          >
+            詳細
+          </button>
+          <span className="text-[#F8FAFC]/50">|</span>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onEditRequest(task);
+            }}
+            className="text-xs text-[#38BDF8] hover:underline"
+          >
+            編集
+          </button>
+        </div>
       </div>
       <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-[#F8FAFC]/70">
         {task.dueDate && <span>📅 {new Date(task.dueDate).toLocaleDateString()}</span>}

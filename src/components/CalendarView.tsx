@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Task } from '../utils/types';
 import { isToday, getDateRangeKeys } from '../utils/dateTime';
 
 type CalendarViewProps = {
   tasks: Task[];
-  onEditRequest: (task: Task) => void;
+  onEditRequest?: (task: Task) => void;
 };
 
 const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -38,8 +39,9 @@ const getCalendarEnd = (date: Date) => {
   return addDays(last, 7 - day);
 };
 
-const CalendarView = ({ tasks, onEditRequest }: CalendarViewProps) => {
+const CalendarView = ({ tasks }: CalendarViewProps) => {
   const [currentMonth, setCurrentMonth] = useState(() => startOfMonth(new Date()));
+  const navigate = useNavigate();
 
   const tasksByDate = useMemo(() => {
     const map = new Map<string, Task[]>();
@@ -160,7 +162,7 @@ const CalendarView = ({ tasks, onEditRequest }: CalendarViewProps) => {
                       <button
                         key={task.id}
                         type="button"
-                        onClick={() => onEditRequest(task)}
+                        onClick={() => navigate(`/tasks/${task.id}`)}
                         className={`block w-full rounded-md ${priorityColor} px-2 py-1 text-left text-[11px] hover:opacity-90 transition-opacity`}
                       >
                         <div className="truncate">{task.title}</div>

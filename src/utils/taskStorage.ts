@@ -24,6 +24,7 @@ const normalizeDueDate = (dueDate?: string): string | undefined => {
 
 const normalizeTask = (raw: Partial<Task>): Task => {
   const status = normalizeStatus(raw.status, raw.completed);
+  const now = new Date().toISOString();
   return {
     id: raw.id ?? crypto.randomUUID(),
     title: raw.title ?? 'Untitled',
@@ -31,8 +32,14 @@ const normalizeTask = (raw: Partial<Task>): Task => {
     completed: status === 'done',
     status,
     dueDate: normalizeDueDate(raw.dueDate),
+    startDate: raw.startDate,
+    endDate: raw.endDate,
     priority: raw.priority,
     tag: raw.tag,
+    createdAt: raw.createdAt ?? now,
+    updatedAt: raw.updatedAt ?? now,
+    comments: Array.isArray(raw.comments) ? raw.comments : [],
+    history: Array.isArray(raw.history) ? raw.history : [],
   };
 };
 

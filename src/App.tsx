@@ -5,6 +5,7 @@ import TodoList from './components/TodoList';
 import FilterTabs from './components/FilterTabs';
 import KanbanBoard from './components/KanbanBoard';
 import CalendarView from './components/CalendarView';
+import UnifiedDashboard from './components/UnifiedDashboard';
 import TaskEditModal from './components/TaskEditModal';
 import TaskDetailPage from './pages/TaskDetailPage';
 import type { Task } from './utils/types';
@@ -79,6 +80,19 @@ function App() {
             <Routes>
                 <Route
                     path="/"
+                    element={
+                        <UnifiedDashboard
+                            tasks={tasks}
+                            onAddTask={handleAddTask}
+                            onToggle={handleToggleTask}
+                            onDelete={handleDeleteTask}
+                            onEditRequest={setEditingTask}
+                            updateTasks={updateTasks}
+                        />
+                    }
+                />
+                <Route
+                    path="/classic"
                     element={
                         <HomePage
                             tasks={tasks}
